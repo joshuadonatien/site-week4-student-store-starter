@@ -8,7 +8,7 @@ const orderRoutes = require("./routes/orders");
 const app = express()
 app.use(cors())
 app.use(express.json())
-app.use("/orders", orderRoutes);
+app.use("/api/orders", orderRoutes);
 
 
 // Create product
