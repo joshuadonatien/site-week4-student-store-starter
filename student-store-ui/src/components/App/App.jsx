@@ -37,7 +37,63 @@ function App() {
   };
 
   const handleOnCheckout = async () => {
+    console.log("Cart contents:", cart)
+    try {
+    setIsCheckingOut(true)
+    setError(null)
+
+    const { name, dorm_number } = userInfo
+    if (!name || !dorm_number) {
+      setError("Please fill out your name and dorm number.")
+      setIsCheckingOut(false)
+      return
+    }
+
+    // 1. Create the order
+    const orderRes = await axios.post("http://localhost:3001/orders", {
+      customer_name: name,
+      dorm_number,
+    })
+
+    const orderId = orderRes.data.id
+
+    // 2. Add items to the order
+    const cartItems = Object.values(cart)
+    for (const item of cartItems) {
+      await axios.post(`http://localhost:3001/orders/${orderId}/items`, {
+        product_id: item.item.id,
+        quantity: item.quantity,
+        price: item.item.price
+      })
+    }
+
+    setOrder(orderRes.data)
+    setCart({}) // ✅ Clear cart
+    alert("Order successfully placed!")
+  } catch (err) {
+    console.error("Checkout error:", err)
+    setError("Something went wrong during checkout.")
+  } finally {
+    setIsCheckingOut(false)
   }
+  }
+
+  useEffect(() => {
+  setIsFetching(true)
+
+  axios.get("http://localhost:3001/products")
+    .then(res => {
+      console.log("✅ Products fetched:", res.data)
+      setProducts(res.data.products)
+    })
+    .catch(err => {
+      console.error("❌ Error fetching products:", err)
+      setError("Failed to fetch products.")
+    })
+    .finally(() => {
+      setIsFetching(false)
+    })
+}, [])
 
 
   return (

@@ -11,7 +11,7 @@ class Order {
         created_at: new Date("2023-06-23T10:00:00Z"),
         orderItems: {
           create: data.items.map(item => ({
-            product_id: item.productId,  // ✅ convert to snake_case
+            product_id: item.productId,  
             quantity: item.quantity,
             price: item.price
           }))

@@ -19,7 +19,7 @@ function ProductDetail({ addToCart, removeFromCart, getQuantityOfItemInCart }) {
 
   if (isFetching || !product) {
     return <h1>Loading...</h1>;
-  }
+  } //Write function for modal
 
   const quantity = getQuantityOfItemInCart(product);
 

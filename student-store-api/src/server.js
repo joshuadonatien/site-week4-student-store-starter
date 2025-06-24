@@ -74,6 +74,15 @@ app.delete("/products/:id", async (req, res) => {
   }
 })
 
+
+async function testDB() {
+  const products = await prisma.product.findMany()
+  console.log("✅ DB Products loaded:", products.length)
+}
+
+testDB()
+
+
 const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`)
