@@ -8,6 +8,7 @@ import ProductDetail from "../ProductDetail/ProductDetail";
 import NotFound from "../NotFound/NotFound";
 import { removeFromCart, addToCart, getQuantityOfItemInCart, getTotalItemsInCart } from "../../utils/cart";
 import "./App.css";
+import { calculateTotal } from "../../utils/calculations";
 
 function App() {
 
@@ -56,17 +57,32 @@ function App() {
     }
     console.log("Submitting order with:", { customer_name, dorm_number, student_id, email })
 
+    // 🧮 Calculate total_price from cart and products
+    let exact_price = 0
+    let total_price =0
+
+  for (const [productIdStr, quantity] of Object.entries(cart)) {
+    const productId = parseInt(productIdStr)
+    const product = products.find(p => p.id === productId)
+    if (product) {
+      exact_price += product.price * quantity
+    }
+    total_price = calculateTotal(exact_price)
+    } 
+    console.log("🧮 Total Price:", total_price)
 
     // 1. Create the order
     const orderRes = await axios.post("http://localhost:3001/api/orders", {
       customer_name: customer_name,
       dorm_number,
+      total_price,
       student_id,
       email
     })
 
     const orderId = orderRes.data.id
 console.log("🧾 Cart contents being submitted:", cart)
+
 
 for (const [productIdStr, quantity] of Object.entries(cart)) {
   const productId = parseInt(productIdStr)
