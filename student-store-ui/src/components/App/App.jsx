@@ -15,7 +15,12 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All Categories");
   const [searchInputValue, setSearchInputValue] = useState("");
-  const [userInfo, setUserInfo] = useState({ name: "", dorm_number: ""});
+  const [userInfo, setUserInfo] = useState({
+  name: "",
+  student_id: "",
+  dorm_number: "", // ✅ This must be included
+  email: ""
+});
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState({});
   const [isFetching, setIsFetching] = useState(false);
@@ -35,37 +40,51 @@ function App() {
   const handleOnSearchInputChange = (event) => {
     setSearchInputValue(event.target.value);
   };
-
+  
   const handleOnCheckout = async () => {
+
     console.log("Cart contents:", cart)
     try {
     setIsCheckingOut(true)
     setError(null)
 
-    const { name, dorm_number } = userInfo
-    if (!name || !dorm_number) {
+    const { customer_name, dorm_number, student_id, email } = userInfo
+    if (!customer_name || !dorm_number) {
       setError("Please fill out your name and dorm number.")
       setIsCheckingOut(false)
       return
     }
+    console.log("Submitting order with:", { customer_name, dorm_number, student_id, email })
+
 
     // 1. Create the order
-    const orderRes = await axios.post("http://localhost:3001/orders", {
-      customer_name: name,
+    const orderRes = await axios.post("http://localhost:3001/api/orders", {
+      customer_name: customer_name,
       dorm_number,
+      student_id,
+      email
     })
 
     const orderId = orderRes.data.id
+console.log("🧾 Cart contents being submitted:", cart)
 
-    // 2. Add items to the order
-    const cartItems = Object.values(cart)
-    for (const item of cartItems) {
-      await axios.post(`http://localhost:3001/orders/${orderId}/items`, {
-        product_id: item.item.id,
-        quantity: item.quantity,
-        price: item.item.price
-      })
-    }
+for (const [productIdStr, quantity] of Object.entries(cart)) {
+  const productId = parseInt(productIdStr)
+
+  if (!productId || !quantity) {
+    console.warn("❌ Skipping invalid cart item:", productIdStr, quantity)
+    continue
+  }
+
+  await axios.post(`http://localhost:3001/api/orders/${orderId}/items`, {
+    product_id: productId,
+    quantity
+  })
+
+  console.log("✅ Added to order:", { product_id: productId, quantity })
+}
+
+
 
     setOrder(orderRes.data)
     setCart({}) // ✅ Clear cart
@@ -84,6 +103,9 @@ function App() {
   axios.get("http://localhost:3001/products")
     .then(res => {
       console.log("✅ Products fetched:", res.data)
+      
+      console.log(res.data.products[3].image_url);
+
       setProducts(res.data.products)
     })
     .catch(err => {

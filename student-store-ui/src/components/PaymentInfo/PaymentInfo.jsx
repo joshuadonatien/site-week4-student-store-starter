@@ -11,29 +11,30 @@ export default function PaymentInfo({ userInfo, setUserInfo, handleOnCheckout, i
       </h3>
       <div className="input-field">
         <label className="label">Student ID</label>
-        <div className="control ">
-          <input
-            className="input"
-            type="text"
-            placeholder="Name"
-            value={userInfo.name}
-            onChange={(e) => setUserInfo((u) => ({ ...u, name: e.target.value }))}
-          />
-        </div>
+          <div className="control ">
+             <input
+                className="input"
+                type="text"
+                placeholder="Name"
+                value={userInfo.customer_name || ""} // ✅ prevent uncontrolled to controlled warning
+                onChange={(e) => setUserInfo((u) => ({ ...u, customer_name: e.target.value }))}
+              />
+          </div>
       </div>
 
+
       <div className="input-field">
-        <label className="label">Dorm Room Number</label>
-        <div className="control">
-          <input
-            className="input"
-            type="email"
-            placeholder="Email"
-            value={userInfo.id}
-            onChange={(e) => setUserInfo((u) => ({ ...u, email: e.target.value }))}
-          />
-        </div>
-      </div>
+  <label className="label">Dorm Room Number</label>
+  <div className="control">
+    <input
+      className="input"
+      type="text"
+      placeholder="Dorm Number"
+      value={userInfo.dorm_number || ""} // ✅ always a string
+      onChange={(e) => setUserInfo((u) => ({ ...u, dorm_number: e.target.value }))}
+    />
+  </div>
+</div>
 
       {/* <div className="field">
         <div className="control">

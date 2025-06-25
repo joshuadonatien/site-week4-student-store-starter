@@ -19,10 +19,27 @@ router.get("/:id", async (req, res) => {
 });
 
 // CREATE
-router.post("/", async (req, res) => {
-  const newOrder = await Order.create(req.body);
-  res.status(201).json(newOrder);
-});
+router.post("/", async (req, res, next) => {
+  try {
+    const { customer_name, dorm_number, student_id, email } = req.body
+
+    if (!customer_name || !dorm_number ) { // "|| !student_id || !email" -took this out to  see if  it would work
+      return res.status(400).json({ error: "Missing required fields" })
+    }
+
+    const newOrder = await prisma.order.create({
+      data: {
+        customer_name,
+        dorm_number
+      }
+    })
+
+    res.status(201).json(newOrder)
+  } catch (err) {
+    next(err)
+  }
+})
+
 
 // UPDATE
 router.put("/:id", async (req, res) => {
