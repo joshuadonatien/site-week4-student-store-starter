@@ -24,21 +24,24 @@ model Product {
 }
 
 model Order {
-  id          Int         @id @default(autoincrement())
-  customer_id Int
-  total_price Float
-  status      String
-  created_at  DateTime    @default(now())
-  orderItems  OrderItem[] // 👈 this links to OrderItem
+  id            Int          @id @default(autoincrement())
+  student_id    String?
+  total_price   Float?        @default(0)
+  customer_name String?
+  dorm_number   String?
+  status        String       @default("pending")
+  created_at    DateTime     @default(now())
+  orderItems    OrderItem[]
 
   @@map("orders")
 }
+
 
 model OrderItem {
   id         Int     @id @default(autoincrement())
   order      Order   @relation(fields: [order_id], references: [id])
   order_id   Int
-  product    Product @relation(fields: [product_id], references: [id])
+  product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
   product_id Int
   quantity   Int
   price      Float
